@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "7929237f-a243-4fde-a3fe-48853885f650",
+    "slug": "6613f362-49e5-45a3-8120-208c03b03e7d",
+    "privacy": "unlisted",
+    "sdkVersion": "33.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.champgm.timetracker"
+    }
+  }
+}
