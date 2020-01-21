@@ -1,4 +1,4 @@
-import { formatEmail } from "../src/Google";
+import { formatEmail } from "../src/google/Google";
 
 describe("Google", () => {
   describe("formatEmail", () => {

@@ -10,4 +10,4 @@ web-build/
 web-report/
 .DS_Store
 **/GoogleToken.ts
-**/Recipients.ts
+**/Spreadsheet.ts

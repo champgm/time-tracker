@@ -4,9 +4,9 @@ import React from "react";
 import { fireEvent, render, RenderAPI } from "react-native-testing-library";
 import renderer from "react-test-renderer";
 
-import { recipientConfiguration } from "../src/Configuration/Recipients";
+import { recipientConfiguration } from "../src/Configuration/Spreadsheet";
 import { Emailer } from "../src/Emailer";
-import { sendEmail } from "../src/Google";
+import { sendEmail } from "../src/google/Google";
 
 describe("Emailer", () => {
   let emailer: RenderAPI;

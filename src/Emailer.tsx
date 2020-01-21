@@ -12,8 +12,8 @@ import AwesomeButton from "react-native-really-awesome-button";
 import v4 from "uuid/v4";
 
 import { createBasesFromColor, rgb, rgbStrings as bases } from "solarizer";
-import { configuration, Recipient } from "./Configuration";
-import { sendEmail } from "./Google";
+import { configuration } from "./Configuration";
+import { addRow } from "./google/Google";
 
 const blue = createBasesFromColor(rgb.blue, "base01");
 const red = createBasesFromColor(rgb.red, "base01");
@@ -22,150 +22,97 @@ const green = createBasesFromColor(rgb.green, "base01");
 export interface Props { }
 
 interface State {
-  recipients: { [name: string]: Recipient };
-  subject?: string;
-  body?: string;
+  note?: string;
   sending?: boolean;
 }
 
 export class Emailer extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-
-    this.state = { recipients: {} };
-    configuration.recipients.forEach((recipient) => {
-      this.state.recipients[recipient.name] = recipient;
-      if (recipient.name === configuration.defaultRecipient) {
-        this.state.recipients[recipient.name].selected = true;
-      }
-    });
-  }
-
-  toggleRecipientSelection(recipientName: string) {
-    const recipient = this.state.recipients[recipientName];
-    recipient.selected = !recipient.selected;
-    this.setState(this.state);
+    this.state = {};
   }
 
   resetState() {
     this.setState({
-      subject: undefined,
-      body: undefined,
+      note: undefined,
       sending: undefined,
     });
   }
 
-  async sendEmail() {
+  async markTime(action: string) {
     this.setState({ sending: true });
-    const recipients = Object.keys(this.state.recipients).map((recipientName) => this.state.recipients[recipientName]);
-    const addresses = recipients.filter((recipient) => recipient.selected).map((recipient) => recipient.email);
-    const errors: any[] = [];
-    for (const address of addresses) {
-      try {
-        ToastAndroid.showWithGravity(
-          "Sending email(s)...",
-          ToastAndroid.SHORT,
-          ToastAndroid.TOP,
-        );
-      } catch (error) {
-        // console.log(`Could not show sending toast.`);
-      }
-      try {
-        await sendEmail(
-          configuration.sender,
-          address,
-          this.state.subject,
-          this.state.body);
-      } catch (error) {
-        errors.push(error);
-      }
+    try {
+      ToastAndroid.showWithGravity(
+        "Updating sheet...",
+        ToastAndroid.SHORT,
+        ToastAndroid.TOP,
+      );
+    } catch (error) {
+      // console.log(`Could not show sending toast.`);
     }
-
-    if (errors.length > 0) {
+    try {
+      await addRow(new Date(), action, this.state.note)
+    } catch (error) {
       try {
-        console.log(`${JSON.stringify(errors, null, 2)}`);
+        console.log(`${JSON.stringify(error, null, 2)}`);
         ToastAndroid.showWithGravity(
-          JSON.stringify(errors, null, 2),
+          JSON.stringify(error, null, 2),
           ToastAndroid.LONG,
           ToastAndroid.TOP,
         );
       } catch (error) {
-        // console.log(`Could not show errors toast, error: ${error}`);
-        // console.log(`Errors: ${errors}`);
+        console.log(`Could not show error toast, error: ${error}`);
+        console.log(`Errors: ${error}`);
       }
-    } else {
-      try {
-        ToastAndroid.showWithGravity(
-          "Successfully sent email(s)",
-          ToastAndroid.SHORT,
-          ToastAndroid.TOP,
-        );
-      } catch (error) {
-        // console.log(`Could not show success toast: ${error}`);
-      }
+      return
+    }
+
+    try {
+      ToastAndroid.showWithGravity(
+        "Successfully updated sheet",
+        ToastAndroid.SHORT,
+        ToastAndroid.TOP,
+      );
+    } catch (error) {
+      console.log(`Could not show success toast: ${error}`);
     }
     this.resetState();
   }
 
   render() {
-    const emailButtons = Object.keys(this.state.recipients).map((recipientName) => {
-      const recipient = this.state.recipients[recipientName];
-      return <AwesomeButton
-        key={this.state.recipients[recipientName].email}
-        onPress={() => this.toggleRecipientSelection(recipientName)}
-        accessibilityLabel={recipientName}
-        backgroundColor={recipient.selected ? blue.base01 : bases.base01}
-        backgroundActive={recipient.selected ? blue.base02 : bases.base02}
-        backgroundDarker={recipient.selected ? blue.base03 : bases.base03}
-        disabled={this.state.sending}
-      >
-        {` ${recipientName} `}
-      </AwesomeButton>;
-    });
     return (
       <View style={styles.root} >
-        <View style={styles.emailForm} >
-          <View style={styles.recipientButtonGroup}>{emailButtons}</View>
+        <View style={styles.form} >
           <View>
             <TextInput
-              // Subject Field
-              onChangeText={(subject) => this.setState({ subject })}
-              style={styles.subject}
-              value={this.state.subject}
-              autoFocus={true}
-              testID="cd7b46a4-2d81-47bf-abc1-7142aba8a7b0"
-            />
-          </View>
-          <View>
-            <TextInput
-              // Body Field
+              // Note Field
               multiline={true}
               numberOfLines={8}
-              onChangeText={(body) => this.setState({ body })}
-              style={styles.body}
-              value={this.state.body}
+              onChangeText={(note) => this.setState({ note })}
+              style={styles.note}
+              value={this.state.note}
               testID="6b50a3ac-a102-4150-823c-e20d44f0c84d"
             />
           </View>
           <View style={styles.actionButtonGroup}>
             <AwesomeButton
-              // Clear button
+              // Stop button
               key={v4()}
-              onPress={() => this.resetState()}
-              accessibilityLabel="Clear"
+              onPress={() => this.markTime('STOP')}
+              accessibilityLabel="Stop"
               width={width / 3}
               backgroundColor={this.state.sending ? bases.base01 : red.base01}
               backgroundActive={this.state.sending ? bases.base02 : red.base02}
               backgroundDarker={this.state.sending ? bases.base03 : red.base03}
               disabled={this.state.sending}
             >
-              Clear
+              Stop
             </AwesomeButton>
             <AwesomeButton
               // Submit Button
               key={v4()}
-              onPress={() => this.sendEmail()}
-              accessibilityLabel="Send"
+              onPress={() => this.markTime('START')}
+              accessibilityLabel="Start"
               testID="2d8395f6-03a5-4c61-9c3b-595143aec8bf"
               width={width / 3}
               backgroundColor={this.state.sending ? bases.base01 : green.base01}
@@ -173,7 +120,7 @@ export class Emailer extends React.Component<Props, State> {
               backgroundDarker={this.state.sending ? bases.base03 : green.base03}
               disabled={this.state.sending}
             >
-              Send
+              Start
             </AwesomeButton>
           </View>
         </View>
@@ -195,7 +142,7 @@ const styles = StyleSheet.create({
     marginTop,
     width,
   },
-  body: {
+  note: {
     paddingHorizontal: Dimensions.get("window").width * .01,
     paddingVertical: Dimensions.get("window").width * .01,
     backgroundColor: bases.base02,
@@ -204,12 +151,7 @@ const styles = StyleSheet.create({
     color: bases.base0,
     width,
   },
-  recipientButtonGroup: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: Dimensions.get("window").width * .6,
-  },
-  emailForm: {
+  form: {
     alignItems: "center",
     alignSelf: "center",
     backgroundColor: bases.base03,
@@ -220,13 +162,5 @@ const styles = StyleSheet.create({
   root: {
     backgroundColor: bases.base03,
     flex: 1,
-  },
-  subject: {
-    paddingHorizontal: Dimensions.get("window").width * .01,
-    paddingVertical: Dimensions.get("window").width * .01,
-    backgroundColor: bases.base02,
-    color: bases.base0,
-    marginTop,
-    width,
   },
 });

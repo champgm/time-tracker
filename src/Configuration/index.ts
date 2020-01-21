@@ -1,23 +1,25 @@
-import {googleToken} from "./GoogleToken";
-import {recipientConfiguration} from "./Recipients";
+import { googleToken } from "./GoogleToken";
+import { spreadsheetConfiguration } from "./Spreadsheet";
 
 export interface Configuration {
-  defaultRecipient: string;
-  recipients: Recipient[];
-  googleAuth: any;
-  sender: string;
-}
-
-export interface Recipient {
-  email: string;
-  name: string;
-  selected?: boolean;
+  spreadsheetId: string,
+  sheetId:number,
+  googleAuth: {
+    sheetsEndpoint: string,
+    tokenEndpoint: string,
+    tokenRequestBody: {
+      grant_type: string,
+      refresh_token: string,
+      client_id: string,
+      client_secret: string,
+    },
+  };
 }
 
 export const configuration: Configuration = {
-  ...recipientConfiguration,
+  ...spreadsheetConfiguration,
   googleAuth: {
-    gmailEndpoint: `https://www.googleapis.com/upload/gmail/v1/users/${recipientConfiguration.sender}/messages/send`,
+    sheetsEndpoint: "https://sheets.googleapis.com/v4/spreadsheets",
     tokenEndpoint: "https://www.googleapis.com/oauth2/v4/token",
     tokenRequestBody: googleToken,
   },
