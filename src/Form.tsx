@@ -12,7 +12,6 @@ import AwesomeButton from "react-native-really-awesome-button";
 import v4 from "uuid/v4";
 
 import { createBasesFromColor, rgb, rgbStrings as bases } from "solarizer";
-import { configuration } from "./Configuration";
 import { addRow } from "./google/Google";
 
 const blue = createBasesFromColor(rgb.blue, "base01");
@@ -26,7 +25,7 @@ interface State {
   sending?: boolean;
 }
 
-export class Emailer extends React.Component<Props, State> {
+export class Form extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {};
@@ -91,6 +90,7 @@ export class Emailer extends React.Component<Props, State> {
               onChangeText={(note) => this.setState({ note })}
               style={styles.note}
               value={this.state.note}
+              autoFocus={true}
               testID="6b50a3ac-a102-4150-823c-e20d44f0c84d"
             />
           </View>

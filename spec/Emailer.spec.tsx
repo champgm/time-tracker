@@ -5,18 +5,18 @@ import { fireEvent, render, RenderAPI } from "react-native-testing-library";
 import renderer from "react-test-renderer";
 
 import { recipientConfiguration } from "../src/Configuration/Spreadsheet";
-import { Emailer } from "../src/Emailer";
+import { Form } from "../src/Form";
 import { sendEmail } from "../src/google/Google";
 
 describe("Emailer", () => {
   let emailer: RenderAPI;
   beforeEach(() => {
     (sendEmail as any).mockClear();
-    emailer = render(<Emailer />);
+    emailer = render(<Form />);
   });
 
   it("renders correctly", () => {
-    const tree = renderer.create(<Emailer />);
+    const tree = renderer.create(<Form />);
     const treeJson = tree.toJSON();
     expect(treeJson).toMatchSnapshot();
   });

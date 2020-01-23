@@ -2,7 +2,7 @@
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "android": "expo start --android",
-    "build": "npm run test && expo build:android",
+    "build": "expo build:android",
     "emulator": "emulator -netdelay none -netspeed full -no-snapshot-load -avd Pixel_2_API_28",
     "eject": "expo eject",
     "ios": "expo start --ios",
