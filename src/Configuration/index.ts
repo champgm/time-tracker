@@ -1,23 +1,19 @@
 import { googleToken } from "./GoogleToken";
-import { spreadsheetConfiguration } from "./Spreadsheet";
+import { spreadsheet } from "./Spreadsheet";
+import { SpreadsheetConfiguration } from "./SpreadsheetConfiguration";
+import { GoogleTokenConfiguration } from "./GoogleTokenConfiguration";
 
 export interface Configuration {
-  spreadsheetId: string,
-  sheetId:number,
+  spreadsheet: SpreadsheetConfiguration
   googleAuth: {
     sheetsEndpoint: string,
     tokenEndpoint: string,
-    tokenRequestBody: {
-      grant_type: string,
-      refresh_token: string,
-      client_id: string,
-      client_secret: string,
-    },
+    tokenRequestBody: GoogleTokenConfiguration
   };
 }
 
 export const configuration: Configuration = {
-  ...spreadsheetConfiguration,
+  spreadsheet,
   googleAuth: {
     sheetsEndpoint: "https://sheets.googleapis.com/v4/spreadsheets",
     tokenEndpoint: "https://www.googleapis.com/oauth2/v4/token",

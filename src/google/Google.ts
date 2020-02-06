@@ -44,13 +44,13 @@ export async function addRow(date: Date, action: string, note: string) {
     rows: [{
       values: [
         { userEnteredValue: { numberValue: timestamp } },
-        { userEnteredValue: { stringValue: date.toISOString() } },
+        { userEnteredValue: { stringValue: date.toLocaleString("en-US", { timeZone: "America/New_York" }) } },
         { userEnteredValue: { stringValue: action } },
         { userEnteredValue: { stringValue: note } },
       ],
     }],
     fields: '*',
-    sheetId: configuration.sheetId,
+    sheetId: configuration.spreadsheet.sheetId,
   }
 
   const authorizationHeader = `Bearer ${await bearerTokenPromise}`;
@@ -61,7 +61,7 @@ export async function addRow(date: Date, action: string, note: string) {
     body: JSON.stringify(body),
   };
 
-  const batchUpdateUrl = `${configuration.googleAuth.sheetsEndpoint}/${configuration.spreadsheetId}:batchUpdate`
+  const batchUpdateUrl = `${configuration.googleAuth.sheetsEndpoint}/${configuration.spreadsheet.spreadsheetId}:batchUpdate`
   console.log(`Updating sheet with URI: ${batchUpdateUrl}`);
   console.log(`Adding rows with parameters: ${JSON.stringify(parameters, null, 2)}`);
   console.log(`JSON body: ${JSON.stringify(body, null, 2)}`);
@@ -71,22 +71,3 @@ export async function addRow(date: Date, action: string, note: string) {
   const fetchResultJson = await fetchResult.json();
   console.log(`Row add result JSON: ${JSON.stringify(fetchResultJson, null, 2)}`);
 }
-
-
-// export async function sendEmail(sender: string, recipient: string, subject: string, body: string) {
-//   const bearerToken = await getAccessToken();
-//   const authorizationHeader = `Bearer ${bearerToken}`;
-//   const parameters: RequestInit = {
-//     method: "POST",
-//     headers: {
-//       "content-type": "message/rfc822",
-//       authorization: authorizationHeader,
-//     },
-//     body: formatEmail(sender, recipient, subject, body),
-//   };
-//   console.log(`Sending email with parameters: ${JSON.stringify(parameters, null, 2)}`);
-//   const fetchResult = await fetch(configuration.googleAuth.gmailEndpoint, parameters);
-//   console.log(`Send email result: ${JSON.stringify(fetchResult, null, 2)}`);
-//   const fetchResultJson = await fetchResult.json();
-//   console.log(`Send email result JSON: ${JSON.stringify(fetchResultJson, null, 2)}`);
-// }
